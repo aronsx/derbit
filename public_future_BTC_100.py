@@ -25,7 +25,7 @@ async def call_api(msg):
             try:
                 print(json_string['params']['data'][0]['timestamp'], json_string['params']['data'][0]['price'],
                       json_string['params']['data'][0]['amount'])
-                if len(deals_cache) < 3:
+                if len(deals_cache) < 3:  # TODO: значение 1000
                     print(deals_cache)
                     deals_cache.append(dict(ts=json_string['params']['data'][0]['timestamp'],
                                             price=json_string['params']['data'][0]['price'],
@@ -45,6 +45,7 @@ async def call_api(msg):
                 pass
             # print(json_string)
             # print(response)
+            # TODO: убрать лишние принты
 
 
 asyncio.get_event_loop().run_until_complete(call_api(json.dumps(msg)))
