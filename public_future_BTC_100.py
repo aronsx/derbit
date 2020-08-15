@@ -23,29 +23,32 @@ async def call_api(msg):
             response = await websocket.recv()
             json_string = json.loads(response)
             try:
-                print(json_string['params']['data'][0]['timestamp'], json_string['params']['data'][0]['price'],
+                print(json_string['params']['data'][0]['timestamp'],
+                      json_string['params']['data'][0]['price'],
                       json_string['params']['data'][0]['amount'])
-                if len(deals_cache) < 3:  # TODO: значение 1000
-                    print(deals_cache)
+                if len(deals_cache) < 1000:
                     deals_cache.append(dict(ts=json_string['params']['data'][0]['timestamp'],
                                             price=json_string['params']['data'][0]['price'],
                                             amount=json_string['params']['data'][0]['amount']))
                 else:
-                    # TODO: вывод средней цены и объема алогоритма с начала работы, последние 20 сделок
-                    with open('./results/deals.json', 'w') as json_file:
-                        # TODO: добавление строк с новой строки
-                        json.dump(deals_cache, json_file)
+                    get_average(deals_cache)
+                    with open('./results/deals.json', 'a') as json_file:
+                        json_file.writelines(f'{row}\n' for row in deals_cache)
                         deals_cache.clear()
-                        print('записано')
-
-                    # print(dict(ts=json_string['params']['data'][0]['timestamp'],
-                    #            price=json_string['params']['data'][0]['price'],
-                    #            amount=json_string['params']['data'][0]['amount']))
             except KeyError:
                 pass
-            # print(json_string)
-            # print(response)
-            # TODO: убрать лишние принты
+
+
+def get_average(_list):
+    count = 0
+    counts = int(len(_list) * 0.98)
+    deals_summ = 0
+    for row in _list:
+        count += 1
+        deals_summ += row.get('price')
+        if count >= counts:
+            print(row)
+    print(f'average trade: {deals_summ / count}')
 
 
 asyncio.get_event_loop().run_until_complete(call_api(json.dumps(msg)))
