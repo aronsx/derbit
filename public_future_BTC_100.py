@@ -43,12 +43,15 @@ def get_average(_list):
     count = 0
     counts = int(len(_list) * 0.98)
     deals_summ = 0
+    amount_summ = 0
     for row in _list:
         count += 1
         deals_summ += row.get('price')
+        amount_summ += row.get('amount')
         if count >= counts:
             print(row)
     print(f'average trade: {deals_summ / count}')
+    print(f'average amount: {amount_summ / count}')
 
 
 asyncio.get_event_loop().run_until_complete(call_api(json.dumps(msg)))
